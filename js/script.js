@@ -83,11 +83,44 @@ const displayNews = (all_news,category_name) => {
                         </div>
 
                         <div>
-                            <i class="bi bi-arrow-right text-primary"></i>
+                            <i onclick="loadNewsDetails('${news._id}')" class="bi bi-arrow-right text-primary" data-bs-toggle="modal" data-bs-target="#newsDetailsModal"></i>
                         </div>
                     </div>
                 </div>
             </div>
             `;
     }
+}
+
+const loadNewsDetails = news_id =>{
+    fetch(`https://openapi.programming-hero.com/api/news/${news_id}`)
+    .then(res => res.json())
+    .then(data => displayNewsDetails(data.data[0]))
+}
+
+const displayNewsDetails = news =>{
+    const newDetails = document.getElementById('news-details');
+    newDetails.innerHTML = '';
+    newDetails.innerHTML =
+        `
+        <img class="w-100 mb-2" src="${news.image_url}" alt="">
+        <h5>${news.title} <span class="badge bg-warning text-black"> ${news.others_info.is_trending ===true ? 'Trending' : ''}</span></h5>
+        <p class="text-muted">${news.details}</p>
+        <div class="d-flex justify-content-between align-items-center my-2">
+            <div class="d-flex gap-2 align-items-center">
+                <img style="height: 50px;" class="rounded-circle" src="${news.author.img}" alt="">
+                <div>
+                    <span>${news.author.name}</span><br>
+                    <span class="text-muted">${news.author.published_date}</span>
+                </div>
+            </div>
+
+            <div>
+                <i class="bi bi-eye-fill"></i> ${news.total_view}
+            </div>
+            <div>
+                Rating: ${news.rating.number}
+            </div>
+        </div>
+        `;
 }
