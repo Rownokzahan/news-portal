@@ -15,7 +15,32 @@ const displayCategories = categories => {
 const loadNews = (category_id, category_name) => {
     fetch(`https://openapi.programming-hero.com/api/news/category/${category_id}`)
     .then(res => res.json())
-    .then(data => displayNews(data.data,category_name))
+    .then(data => {
+        document.getElementById('btn-container').innerHTML =
+            `
+            <button onclick ="loadTodayPickNews('${category_id}', '${category_name}')" class="btn btn-primary">Today's Pick</button>
+            <button onclick ="loadTrendingNews('${category_id}', '${category_name}')" class="btn btn-outline-primary">Trending</button>
+            `;
+        displayNews(data.data,category_name);
+    })
+}
+
+const loadTodayPickNews =(category_id, category_name)=>{
+    fetch(`https://openapi.programming-hero.com/api/news/category/${category_id}`)
+    .then(res => res.json())
+    .then(data => {
+        const all_news = data.data.filter(data=>data.others_info.is_todays_pick ===true);
+        displayNews(all_news,category_name)
+    })
+}
+
+const loadTrendingNews =(category_id, category_name)=>{
+    fetch(`https://openapi.programming-hero.com/api/news/category/${category_id}`)
+    .then(res => res.json())
+    .then(data => {
+        const all_news = data.data.filter(data=>data.others_info.is_trending ===true);
+        displayNews(all_news,category_name)
+    })
 }
 
 const displayNews = (all_news,category_name) => {
@@ -24,7 +49,7 @@ const displayNews = (all_news,category_name) => {
 
     foundMessage.innerHTML = `${all_news.length} items found for category ${category_name}`;
     newsContainer.innerHTML = '';
-    
+
     for (const news of all_news) {
         newsContainer.innerHTML +=
             `
